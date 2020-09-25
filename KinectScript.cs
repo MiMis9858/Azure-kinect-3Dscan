@@ -93,6 +93,7 @@ public class KinectScript : MonoBehaviour
     //Kinectからデータを取得し、描画するメソッド
     private async Task KinectLoop()
     {
+        int vertices_count = 1;
         //while文でkinectからデータを取り続ける
         while (true)
         {
@@ -144,12 +145,18 @@ public class KinectScript : MonoBehaviour
                             
                             if(xyzArray[i].X <= -19 && xyzArray[i].X >= -22)
                             {
-                                vertices[vertices_count].x = xyzArray[i].X * 1f;
-                                vertices[vertices_count].y = -xyzArray[i].Y * 1f;//上下反転　0.001f
-                                vertices[vertices_count].z = xyzArray[i].Z * 1f;
+                                vertices[vertices_count-1].x = xyzArray[i].X * 1f;
+                                vertices[vertices_count-1].y = -xyzArray[i].Y * 1f;//上下反転　0.001f
+                                vertices[vertices_count-1].z = xyzArray[i].Z * 1f;
+
+                                 //角度調整
+                                vertices[vertices_count-1].x = vertices[vertices].x * Math.Cos(24.0*vertices_count) - vertices[vertices_count].z * Math.Sin(24.0*vertices_count);
+                                vertices[vertices_count-1].z = vertices[vertices].x * Math.Sin(24.0*vertices_count) + vertices[vertices_count].z * Math.Cos(24.0*vertices_count);
 
                                 vertices_count++;
-                                //ここの下に角度計算
+                               
+
+
                             }
                             
                         }
