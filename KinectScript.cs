@@ -111,25 +111,6 @@ public class KinectScript : MonoBehaviour
                 Short3[] xyzArray = xyzImage.GetPixels<Short3>().ToArray();
 
 
-                //Kinectで取得した全点の座標や色を代入
-                for (int i = 0; i < num; i++)
-                {
-                    //頂点座標の代入
-                    long d = pow3(xyzArray[i]);
-                    if (xyzArray[i].Z < 150|| xyzArray[i].Z > 250 || xyzArray[i].Y > 60) xyzArray[i].X = xyzArray[i].Y = xyzArray[i].Z = 0;
-                    {
-                        
-                        if(xyzArray[i].X <= -19 && xyzArray[i].X >= -22)
-                        {
-                            vertices[vertices_count].x = xyzArray[i].X * 1f;
-                            vertices[vertices_count].y = -xyzArray[i].Y * 1f;//上下反転　0.001f
-                            vertices[vertices_count].z = xyzArray[i].Z * 1f;
-
-                            vertices_count++;
-                        }
-                        
-                    }
-                }   
                 //meshに最新の点の座標と色を渡す
                 mesh.vertices = vertices;
                 mesh.colors32 = colors;
@@ -142,6 +123,7 @@ public class KinectScript : MonoBehaviour
                     Debug.Log("Capture & Saved");
                     captured = false;
                 }
+
                 // timer 約1秒ごとに処理　±0.1s
                 sw.Stop();
                 TimeSpan ts = sw.Elapsed;
@@ -152,6 +134,26 @@ public class KinectScript : MonoBehaviour
                 //Debug.Log(diff);
                 if(ts.Seconds *1000 + ts.Milliseconds > 900)
                 {
+                     //Kinectで取得した全点の座標や色を代入
+                    for (int i = 0; i < num; i++)
+                    {
+                        //頂点座標の代入
+                        long d = pow3(xyzArray[i]);
+                        if (xyzArray[i].Z < 150|| xyzArray[i].Z > 250 || xyzArray[i].Y > 60) xyzArray[i].X = xyzArray[i].Y = xyzArray[i].Z = 0;
+                        {
+                            
+                            if(xyzArray[i].X <= -19 && xyzArray[i].X >= -22)
+                            {
+                                vertices[vertices_count].x = xyzArray[i].X * 1f;
+                                vertices[vertices_count].y = -xyzArray[i].Y * 1f;//上下反転　0.001f
+                                vertices[vertices_count].z = xyzArray[i].Z * 1f;
+
+                                vertices_count++;
+                                //ここの下に角度計算
+                            }
+                            
+                        }
+                    }   
                     Debug.Log(ts);
                     sw.Restart();
                 }
@@ -159,6 +161,7 @@ public class KinectScript : MonoBehaviour
                 {
                     sw.Start();
                 }
+
             }
         }
     }
