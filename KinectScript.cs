@@ -162,18 +162,10 @@ public class KinectScript : MonoBehaviour
                 //Debug.Log(diff);
                 if(ts.Seconds *1000 + ts.Milliseconds > 900)
                 {
-                    for(int k = 0; k < num ; k++)
-                    {
-                        if(mesh.vertices[k].X <= -16 && mesh.vertices[k].X >= -24)
-                        {
-                            mesh.vertices[k].X = mesh.vertices[k].x * Math.Cos(24.0*fifteencount) - mesh.vertices[k].z * Math.Sin(24.0*fifteencount);
-                            mesh.vertices[k].z = mesh.vertices[k].x * Math.Sin(24.0*fifteencount) + mesh.vertices[k].z * Math.Cos(24.0*fifteencount);
-                            mesh.colect_point_cloud.Add(mesh.vertices[k]);
-                        }
-                    }
+                    ColectScanData();
                     Debug.Log(ts);
                     sw.Restart();
-                    fifteencount ++;
+                    
                 }
                 else
                 {
@@ -217,7 +209,19 @@ public class KinectScript : MonoBehaviour
         }
         return ret;
     }
-
+    private static void ColectScanData()
+    {
+        for(int k = 0; k < num ; k++)
+        {
+            if(mesh.vertices[k].X <= -16 && mesh.vertices[k].X >= -24)
+            {
+                mesh.vertices[k].X = mesh.vertices[k].x * (float)Math.Cos(24.0*fifteencount) - mesh.vertices[k].z * (float)Math.Sin(24.0*fifteencount);
+                mesh.vertices[k].z = mesh.vertices[k].x * (float)Math.Sin(24.0*fifteencount) + mesh.vertices[k].z * (float)Math.Cos(24.0*fifteencount);
+                mesh.colect_point_cloud.Add(mesh.vertices[k]);
+            }
+        }
+        fifteencount ++;
+    }
     private long pow3(Short3 p)
     {
         return p.X * p.X + p.Y * p.Y + p.Z * p.Z; 
