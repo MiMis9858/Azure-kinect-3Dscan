@@ -93,7 +93,6 @@ public class KinectScript : MonoBehaviour
     //Kinectからデータを取得し、描画するメソッド
     private async Task KinectLoop()
     {
-        List<Vector3> colect_pointcoud = new List<Vector3>();
         //while文でkinectからデータを取り続ける
         while (true)
         {
@@ -117,7 +116,7 @@ public class KinectScript : MonoBehaviour
                     //頂点座標の代入
                     long d = pow3(xyzArray[i]);
                     if (xyzArray[i].Z < 150|| xyzArray[i].Z > 250 || xyzArray[i].Y > 60) xyzArray[i].X = xyzArray[i].Y = xyzArray[i].Z = 0;
-                    {   
+                    {
                         vertices[i].x = xyzArray[i].X * 1f;
                         vertices[i].y = -xyzArray[i].Y * 1f;//上下反転　0.001f
                         vertices[i].z = xyzArray[i].Z * 1f;
@@ -131,9 +130,9 @@ public class KinectScript : MonoBehaviour
                         colors[i].g = 0;
                         colors[i].r = 0;
                         colors[i].a = 255;
-                        if(vertices[i].x !<= -22 && vertices[i].x !>= -19)
+                        if(vertices[i].x !<= -19 && vertices[i].x !>= -22)
                         {
-                            vertices[i].x = vertices[i].y = vertices.z = 0;
+                            vertices[i].x = vertices[i].y = vertices[i].z = 0;
                         }
                     }
                 }
