@@ -27,7 +27,7 @@ public class KinectScript : MonoBehaviour
     // キャプチャフラグ（GUI等で起動）
     public static bool captured = false;
 
-    System.Diagnostics.Stopwatch sw; 
+    System.Diagnostics.Stopwatch sw;
 
     void Start()
     {
@@ -54,7 +54,7 @@ public class KinectScript : MonoBehaviour
             DepthMode = DepthMode.NFOV_2x2Binned,
             SynchronizedImagesOnly = true,
             CameraFPS = FPS.FPS5 //FPS5, FPS30
-        }) ;
+        });
         //座標変換(Color⇔Depth対応やDepth→xyz)のための情報を生成
         transformation = kinect.GetCalibration().CreateTransformation();
         sw.Start();
@@ -93,6 +93,7 @@ public class KinectScript : MonoBehaviour
     //Kinectからデータを取得し、描画するメソッド
     private async Task KinectLoop()
     {
+        List<Vector3> colect_pointcloud = new List<Vector3>();
         //while文でkinectからデータを取り続ける
         while (true)
         {
@@ -115,7 +116,7 @@ public class KinectScript : MonoBehaviour
                 {
                     //頂点座標の代入
                     long d = pow3(xyzArray[i]);
-                    if (xyzArray[i].Z < 150|| xyzArray[i].Z > 250 || xyzArray[i].Y > 60) xyzArray[i].X = xyzArray[i].Y = xyzArray[i].Z = 0;
+                    if (xyzArray[i].Z < 150 || xyzArray[i].Z > 250 || xyzArray[i].Y > 60) xyzArray[i].X = xyzArray[i].Y = xyzArray[i].Z = 0;
                     {
                         vertices[i].x = xyzArray[i].X * 1f;
                         vertices[i].y = -xyzArray[i].Y * 1f;//上下反転　0.001f
@@ -130,14 +131,18 @@ public class KinectScript : MonoBehaviour
                         colors[i].g = 0;
                         colors[i].r = 0;
                         colors[i].a = 255;
-                        if(vertices[i].x !<= -19 && vertices[i].x !>= -22)
+                        if (vertices[i].x <= -14 && vertices[i].x >= -27)
+                        {
+                            colect_pointcloud.Add(vertices[i]);
+                        }
+                        else
                         {
                             vertices[i].x = vertices[i].y = vertices[i].z = 0;
                         }
                     }
                 }
                 //meshに最新の点の座標と色を渡す
-                mesh.vertices = vertices;
+                mesh.vertices = colect_pointcloud;
                 mesh.colors32 = colors;
                 mesh.RecalculateBounds();
                 // ボタンに対応してキャプチャを行う
@@ -152,11 +157,11 @@ public class KinectScript : MonoBehaviour
                 sw.Stop();
                 TimeSpan ts = sw.Elapsed;
 
-                int diff = ts.Seconds*1000+ts.Milliseconds - 1000;
+                int diff = ts.Seconds * 1000 + ts.Milliseconds - 1000;
                 //if (diff < 0) diff = - diff;
                 //Debug.Log(ts);
                 //Debug.Log(diff);
-                if(ts.Seconds *1000 + ts.Milliseconds > 900)
+                if (ts.Seconds * 1000 + ts.Milliseconds > 900)
                 {
                     Debug.Log(ts);
                     sw.Restart();
@@ -183,7 +188,7 @@ public class KinectScript : MonoBehaviour
             sb.AppendFormat("v {0} {1} {2}\n",
                 item.x.ToString("F8"),
                 item.y.ToString("F8"),
-                (item.z-200).ToString("F8"));
+                (item.z - 200).ToString("F8"));
         }
         return sb.ToString();
     }
@@ -206,7 +211,7 @@ public class KinectScript : MonoBehaviour
 
     private long pow3(Short3 p)
     {
-        return p.X * p.X + p.Y * p.Y + p.Z * p.Z; 
+        return p.X * p.X + p.Y * p.Y + p.Z * p.Z;
     }
     //このオブジェクトが消える(アプリ終了)と同時にKinectを停止
     private void OnDestroy()
