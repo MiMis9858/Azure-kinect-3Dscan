@@ -93,7 +93,7 @@ public class KinectScript : MonoBehaviour
     //Kinectからデータを取得し、描画するメソッド
     private async Task KinectLoop()
     {
-        int vertices_count = 1;
+        List<Vector3> colect_pointcoud = new List<Vector3>();
         //while文でkinectからデータを取り続ける
         while (true)
         {
@@ -111,7 +111,32 @@ public class KinectScript : MonoBehaviour
                 //変換後のデータから点の座標のみの配列を取得
                 Short3[] xyzArray = xyzImage.GetPixels<Short3>().ToArray();
 
-
+                //Kinectで取得した全点の座標や色を代入
+                for (int i = 0; i < num; i++)
+                {
+                    //頂点座標の代入
+                    long d = pow3(xyzArray[i]);
+                    if (xyzArray[i].Z < 150|| xyzArray[i].Z > 250 || xyzArray[i].Y > 60) xyzArray[i].X = xyzArray[i].Y = xyzArray[i].Z = 0;
+                    {   
+                        vertices[i].x = xyzArray[i].X * 1f;
+                        vertices[i].y = -xyzArray[i].Y * 1f;//上下反転　0.001f
+                        vertices[i].z = xyzArray[i].Z * 1f;
+                        //色の代入
+                        /*
+                        colors[i].b = colorArray[i].B;
+                        colors[i].g = colorArray[i].G;
+                        colors[i].r = colorArray[i].R;
+                        */
+                        colors[i].b = 0;
+                        colors[i].g = 0;
+                        colors[i].r = 0;
+                        colors[i].a = 255;
+                        if(vertices[i].x !<= -22 && vertices[i].x !>= -19)
+                        {
+                            vertices[i].x = vertices[i].y = vertices.z = 0;
+                        }
+                    }
+                }
                 //meshに最新の点の座標と色を渡す
                 mesh.vertices = vertices;
                 mesh.colors32 = colors;
@@ -124,7 +149,6 @@ public class KinectScript : MonoBehaviour
                     Debug.Log("Capture & Saved");
                     captured = false;
                 }
-
                 // timer 約1秒ごとに処理　±0.1s
                 sw.Stop();
                 TimeSpan ts = sw.Elapsed;
@@ -135,32 +159,6 @@ public class KinectScript : MonoBehaviour
                 //Debug.Log(diff);
                 if(ts.Seconds *1000 + ts.Milliseconds > 900)
                 {
-                     //Kinectで取得した全点の座標や色を代入
-                    for (int i = 0; i < num; i++)
-                    {
-                        //頂点座標の代入
-                        long d = pow3(xyzArray[i]);
-                        if (xyzArray[i].Z < 150|| xyzArray[i].Z > 250 || xyzArray[i].Y > 60) xyzArray[i].X = xyzArray[i].Y = xyzArray[i].Z = 0;
-                        {
-                            
-                            if(xyzArray[i].X <= -19 && xyzArray[i].X >= -22)
-                            {
-                                vertices[vertices_count-1].x = xyzArray[i].X * 1f;
-                                vertices[vertices_count-1].y = -xyzArray[i].Y * 1f;//上下反転　0.001f
-                                vertices[vertices_count-1].z = xyzArray[i].Z * 1f;
-
-                                 //角度調整
-                                vertices[vertices_count-1].x = vertices[vertices].x * Math.Cos(24.0*vertices_count) - vertices[vertices_count].z * Math.Sin(24.0*vertices_count);
-                                vertices[vertices_count-1].z = vertices[vertices].x * Math.Sin(24.0*vertices_count) + vertices[vertices_count].z * Math.Cos(24.0*vertices_count);
-
-                                vertices_count++;
-                               
-
-
-                            }
-                            
-                        }
-                    }   
                     Debug.Log(ts);
                     sw.Restart();
                 }
@@ -168,7 +166,6 @@ public class KinectScript : MonoBehaviour
                 {
                     sw.Start();
                 }
-
             }
         }
     }
